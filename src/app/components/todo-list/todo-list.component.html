@@ -1,0 +1,84 @@
+<div
+  id="todo-list-page"
+  fxLayout="column"
+  fxLayoutAlign="start start"
+  fxLayoutGap="30px"
+  class="container">
+
+    <div
+      fxLayout="row"
+      fxLayout.xs="column"
+      fxLayoutAlign="space-between center"
+      fxLayoutWrap
+      fxLayoutGap="15px">
+
+        <h3>TODO List</h3>
+
+        <button
+          *ngIf="!blockers.initializing && tasksEditingAllowed"
+          (click)="actionOpenTaskModal()"
+          mat-button
+          color="primary">
+            Add Task
+        </button>
+
+    </div>
+
+    <div
+      *ngIf="info.message"
+      [ngClass]="[info.type]" >
+        {{ info.message }}
+    </div>
+
+    <mat-card
+      *ngIf="tasks.length > 0"
+      fxLayout="column"
+      fxLayoutGap="20px">
+
+        <div
+          fxLayout="row"
+          fxLayoutAlign="space-between center"
+          fxLayoutGap="10px"
+          fxLayoutFill
+          *ngFor="let task of tasks">
+
+            <mat-checkbox
+              [checked]="task.isComplete"
+              [disabled]="blockers.api_processing"
+              (change)="onTaskStatusChange(task)"
+              [disableRipple]="true"
+              [aria-label]="task.description">
+            </mat-checkbox>
+
+            <div
+              fxLayout="column"
+              fxLayoutAlign="start start"
+              fxLayoutGap="5px"
+              fxFlex="auto"
+              [ngClass]="{'line-through': task.isComplete}">
+
+                <div fxLayout="column">{{ task.description }}</div>
+                <div fxLayout="row" fxLayout.xs="column" class="task-details">
+                    <span>Assigned to: {{ task.asignedUsername }}</span>&nbsp;
+                    <span *ngIf="task.dueDate; else noDueDate" class="due-date">Due date: {{ task.dueDate }}</span>
+                    <ng-template #noDueDate>
+                        <span>No due date set</span>
+                    </ng-template>
+                </div>
+            </div>
+
+
+            <button
+              *ngIf="tasksEditingAllowed"
+              (click)="actionOpenTaskModal(task.id)"
+              mat-button
+              aria-label="Edit task"
+              color="primary">
+                Edit
+            </button>
+
+        </div>
+
+    </mat-card>
+
+</div>

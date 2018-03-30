@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('peach-todo-app-angular5 App', () => {
+describe('peach-todo-app-ng5 App', () => {
   let page: AppPage;
 
   beforeEach(() => {

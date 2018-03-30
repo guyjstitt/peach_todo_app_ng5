@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PeachService } from 'ng-peach';
 
 @Component({
-  selector: 'app-root',
+  selector: 'todo-app-ng5',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'app';
-}
+export class AppComponent {}

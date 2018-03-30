@@ -1,0 +1,157 @@
+<div
+  id="todo-edit-page"
+  fxLayout="column"
+  fxLayoutAlign="start start"
+  fxLayoutGap="30px"
+  class="container">
+
+    <div
+      *ngIf="!blockers.initializing && editedTask"
+      fxLayout="row"
+      fxLayoutAlign="space-between center"
+      fxFlex="grow"
+      fxLayoutGap="15px">
+
+        <h3 *ngIf="editedTask.id; else newTaskTitle">Edit Task</h3>
+        <ng-template #newTaskTitle>
+            <h3>Add Task</h3>
+        </ng-template>
+
+    </div>
+
+    <div
+      *ngIf="info.message"
+      [ngClass]="[info.type]" >
+        {{ info.message }}
+    </div>
+
+    <mat-card
+      *ngIf="!blockers.initializing && editedTask"
+      fxLayout="row"
+      fxLayoutGap="20px">
+
+        <form
+          #taskForm="ngForm"
+          fxLayout="row wrap"
+          fxLayoutAlign="start start"
+          fxFlex="50%"
+          fxFlex.xs="100%"
+          fxLayoutGap="10px"
+          fxLayoutFill>
+                
+            <mat-form-field hintLabel="Max 256 characters" fxFlex="100%">
+
+                <textarea
+                  matInput
+                  matTextareaAutosize
+                  name="description"
+                  placeholder="Description"
+                  aria-label="Description"
+                  maxlength="256"
+                  [(ngModel)]="editedTask.description"
+                  #description="ngModel"
+                  [disabled]="blockers.api_processing"
+                  required>
+                </textarea>
+                <mat-error *ngIf="description.invalid && description.errors.required">
+                    Description is <strong>required</strong>
+                </mat-error>
+                <mat-error *ngIf="description.invalid && description.errors.maxlength">
+                    Description can be max 256 characters long
+                </mat-error>
+
+            </mat-form-field>
+
+            <mat-form-field fxFlex="100%">
+
+                <mat-select
+                  name="user"
+                  placeholder="Assigned User"
+                  aria-label="Assigned User"
+                  [(ngModel)]="editedTask.assignedUserId"
+                  #user="ngModel"
+                  [disabled]="blockers.api_processing"
+                  required>
+                    <mat-option>None</mat-option>
+                    <mat-option
+                    *ngFor="let user of accountUsers"
+                    [value]="user.id">
+                        {{ user.userName }}
+                    </mat-option>
+                </mat-select>
+
+                <mat-error *ngIf="user.invalid && user.errors.required">
+                    Task has to be assigned to somebody
+                </mat-error>
+
+            </mat-form-field>
+
+            <mat-form-field fxFlex="100%">
+
+                <input
+                  matInput
+                  name="dueDate"
+                  placeholder="Due Date"
+                  aria-label="Due Date"
+                  [matDatepicker]="dueDate"
+                  [min]="currentDate"
+                  [(ngModel)]="editedTask.dueDate"
+                  #dueDate="ngModel"
+                  [disabled]="blockers.api_processing">
+                <mat-datepicker-toggle matSuffix [for]="dueDate"></mat-datepicker-toggle>
+                <mat-datepicker #dueDate></mat-datepicker>
+
+            </mat-form-field>
+
+            <mat-checkbox
+              name="isComplete"
+              aria-label="Is Complete"
+              [(ngModel)]="editedTask.isComplete"
+              [disabled]="blockers.api_processing">
+                Is Complete
+            </mat-checkbox>
+
+        </form>
+
+    </mat-card>
+
+    <div
+      *ngIf="!blockers.initializing && editedTask"
+      fxLayout="row"
+      fxLayoutAlign="start"
+      fxLayoutWrap
+      fxLayoutGap="10px">
+
+        <button
+          *ngIf="editedTask.id"
+          (click)="actionConfirmDeleteTask()"
+          [disabled]="blockers.api_processing"
+          mat-button
+          mat-raised-button
+          color="warn"
+          aria-label="Delete">
+            DELETE
+        </button>
+
+        <button
+          (click)="actionClose()"
+          [disabled]="blockers.api_processing"
+          mat-button
+          mat-raised-button
+          aria-label="Cancel">
+            CANCEL
+        </button>
+
+        <button
+          (click)="actionConfirmSaveTask()"
+          [disabled]="disableSaveButton()"
+          mat-button
+          mat-raised-button
+          color="primary"
+          aria-label="Save">
+            SAVE
+        </button>
+
+    </div>
+
+</div>
