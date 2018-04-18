@@ -1,5 +1,5 @@
 {
-  "key": "todo_app",
+  "key": "todo_app_ng5",
   "framework": {
     "angular5": {
       "module": "todoAppNg5",
