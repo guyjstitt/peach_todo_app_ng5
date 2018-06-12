@@ -12,7 +12,7 @@ export class TaskSchedulesService {
 
   constructor(peachService: PeachService) {
     this.peachService = peachService;
-    this.resource = this.peachService.api.resource(API_KEY);
+    this.resource = this.peachService.api.resource(API_KEY, {useCoreToken: true});
   }
 
   public load(findParams: object | number = null, otherParams: object = null): Observable<any> {
