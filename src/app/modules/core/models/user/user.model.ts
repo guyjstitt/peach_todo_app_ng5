@@ -1,5 +1,6 @@
-import { BaseModel } from '../base.model';
 import * as _ from 'lodash';
+
+import { BaseModel } from '../base.model';
 
 const API_KEY = 'users';
 const DEFAULT_USERNAME = '[Unknown user]';
@@ -9,6 +10,18 @@ export class User extends BaseModel {
 
   protected _first_name: string = null;
   protected _last_name: string = null;
+
+  get firstName(): string {
+    return this._first_name;
+  }
+
+  get lastName(): string {
+    return this._last_name;
+  }
+
+  get userName(): string {
+    return (this.firstName || this.lastName) ? `${this.firstName} ${this.lastName}` : DEFAULT_USERNAME;
+  }
 
   constructor(rawData: object = {}) {
 
@@ -23,19 +36,7 @@ export class User extends BaseModel {
 
   }
 
-  public get firstName(): string {
-    return this._first_name;
-  }
-
-  public get lastName(): string {
-    return this._last_name;
-  }
-
-  public get userName(): string {
-    return (this.firstName || this.lastName) ? `${this.firstName} ${this.lastName}` : DEFAULT_USERNAME;
-  }
-
-  public forDB(): object {
+  forDB(): object {
 
     let dbObject: object = {};
 
@@ -54,15 +55,15 @@ export class User extends BaseModel {
 
   }
 
-  public static getApiKey(): string {
+  static getApiKey(): string {
     return API_KEY;
   }
 
-  public static getDefaultUserName(): string {
+  static getDefaultUserName(): string {
     return DEFAULT_USERNAME;
   }
 
-  public static fromRaw(data: any = null): User | Array<User> {
+  static fromRaw(data: any = null): User | Array<User> {
 
     if (_.isArray(data)) {
 
@@ -91,7 +92,7 @@ export class User extends BaseModel {
 
   }
 
-  public static isValid(user: any = null): boolean {
+  static isValid(user: any = null): boolean {
 
     return user &&
       user instanceof User &&

@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { PeachService } from 'ng-peach';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'todo-app-ng5',

@@ -16,7 +16,7 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(appRoutes, {useHash: true}) // important to use hash if he app has to work correctly on Peach platform!!!
+    RouterModule.forRoot(appRoutes, {useHash: true}) // important to use hash if the app has to work correctly on Peach platform!!!
   ],
   exports: [RouterModule]
 })

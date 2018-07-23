@@ -1,13 +1,14 @@
-import { BaseDataService } from '../../classes/base-data-service';
+import { BeyondService } from '@getbeyond/ng-beyond-js';
 import { Injectable } from '@angular/core';
-import { PeachService } from 'ng-peach';
+
+import { BaseDataService } from '../../classes/base-data-service';
 import { User } from '../../models/user/user.model';
 
 @Injectable()
 export class UsersService extends BaseDataService {
 
-  constructor(peachService: PeachService) {
-    super(peachService, User);
+  constructor(beyondService: BeyondService) {
+    super(beyondService, User);
   }
 
 }

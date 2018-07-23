@@ -1,21 +1,21 @@
+import { BeyondService } from '@getbeyond/ng-beyond-js';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PeachService } from 'ng-peach';
 
 const API_KEY = 'account_prefs';
 
 @Injectable()
 export class AccountPrefsService {
 
-  private peachService: PeachService;
+  private beyondService: BeyondService;
   private resource: any;
 
-  constructor(peachService: PeachService) {
-    this.peachService = peachService;
-    this.resource = this.peachService.api.resource(API_KEY, {useCoreToken: true});
+  constructor(beyondService: BeyondService) {
+    this.beyondService = beyondService;
+    this.resource = this.beyondService.api.resource(API_KEY, {useCoreToken: true});
   }
 
-  public save(data: any = {}): Observable<any> {
+  save(data: any = {}): Observable<any> {
     return this.resource.save(data);
   }
 

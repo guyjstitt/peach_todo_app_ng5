@@ -1,8 +1,9 @@
-import { BaseModel } from '../base.model';
-import { User } from '../user/user.model';
-import { DB_DATE_FORMAT } from '../../../../app.const';
 import * as _ from 'lodash';
 import * as moment from 'moment-timezone';
+
+import { BaseModel } from '../base.model';
+import { DB_DATE_FORMAT } from '../../../../app.const';
+import { User } from '../user/user.model';
 
 const API_KEY = 'tdd_task';
 const FIELDS = ['assigned_user_id', 'description', 'due_date', 'is_complete', 'location_id'];
@@ -15,6 +16,44 @@ export class Task extends BaseModel {
   protected _is_complete: boolean;
   protected _location_id: number;
 
+  get assignedUserId(): number | User {
+    return this._assigned_user_id;
+  }
+
+  get assignedUsername(): string {
+    return (this._assigned_user_id instanceof User) ?
+      this._assigned_user_id.userName :
+      User.getDefaultUserName();
+  }
+
+  get description(): string {
+    return this._description;
+  }
+
+  get dueDate(): string | Date {
+    return this._due_date;
+  }
+
+  get isComplete(): boolean {
+    return this._is_complete;
+  }
+
+  set assignedUserId(userID: number | User) {
+    this._assigned_user_id = userID;
+  }
+
+  set description(description: string) {
+    this._description = description;
+  }
+
+  set isComplete(isComplete: boolean) {
+    this._is_complete = isComplete;
+  }
+
+  set dueDate(dueDate: string | Date) {
+    this._due_date = dueDate;
+  }
+
   constructor(rawData: object = {}) {
 
     super(rawData);
@@ -26,46 +65,6 @@ export class Task extends BaseModel {
       }
     );
 
-  }
-
-  public get assignedUserId(): number | User {
-    return this._assigned_user_id;
-  }
-
-  public get asignedUsername(): string {
-
-    return (this._assigned_user_id instanceof User) ?
-      this._assigned_user_id.userName :
-      User.getDefaultUserName();
-
-  }
-
-  public get description(): string {
-    return this._description;
-  }
-
-  public get dueDate(): string | Date {
-    return this._due_date;
-  }
-
-  public get isComplete(): boolean {
-    return this._is_complete
-  }
-
-  public set assignedUserId(userID: number | User) {
-    this._assigned_user_id = userID;
-  }
-
-  public set description(description: string) {
-    this._description = description;
-  }
-
-  public set isComplete(isComplete: boolean) {
-    this._is_complete = isComplete;
-  }
-
-  public set dueDate(dueDate: string | Date) {
-    this._due_date = dueDate;
   }
 
   public forDB(): object {
@@ -96,15 +95,15 @@ export class Task extends BaseModel {
 
   }
 
-  public toggleStatus(): boolean {
+  toggleStatus(): boolean {
     return this._is_complete = !this._is_complete;
   }
 
-  public static getApiKey(): string {
+  static getApiKey(): string {
     return API_KEY;
   }
 
-  public static fromRaw(data: any = null): Task | Array<Task> {
+  static fromRaw(data: any = null): Task | Array<Task> {
 
     if (_.isArray(data)) {
 
@@ -143,7 +142,7 @@ export class Task extends BaseModel {
 
   }
 
-  public static isValid(task: any = null): boolean {
+  static isValid(task: any = null): boolean {
 
     return task &&
       task instanceof Task &&

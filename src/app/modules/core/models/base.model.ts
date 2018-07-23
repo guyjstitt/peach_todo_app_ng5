@@ -1,5 +1,6 @@
-import { DB_FIELDS } from '../../../app.const';
 import * as _ from 'lodash';
+
+import { DB_FIELDS } from '../../../app.const';
 
 export class BaseModel {
 
@@ -10,6 +11,10 @@ export class BaseModel {
   protected _updated_by: string;
   protected _is_deleted: boolean;
   protected _uri: string;
+
+  get id(): number {
+    return this._id;
+  }
 
   constructor(rawData: object = {}) {
 
@@ -30,10 +35,6 @@ export class BaseModel {
 
     return dbObject;
 
-  }
-
-  get id(): number {
-    return this._id;
   }
 
   static getApiKey(): string {

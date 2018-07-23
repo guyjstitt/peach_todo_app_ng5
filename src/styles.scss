@@ -1,12 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files. */
 $font-color: #58595B;
 $font-color-disabled: #A7A9AC;
 $font-color-due: #d12020;
 
-body {
-  margin: 0px !important;
-  font-family: Helvetica, Arial, sans-serif;
-  color: $font-color;
+#page_frame{
+  overflow-y: auto !important;
 }
 
 .text-center {
@@ -15,6 +13,11 @@ body {
 
 .container {
   padding: 30px;
+}
+
+beyond-progressbar {
+  display: flex;
+  margin-top: 20px;
 }
 
 @media (max-width: 600px) {

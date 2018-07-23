@@ -1,14 +1,14 @@
+import * as _ from 'lodash';
+import { catchError, finalize, debounceTime, mergeMap } from 'rxjs/operators';
+import { Component, ErrorHandler, OnInit, ViewChild } from '@angular/core';
+import { empty, forkJoin } from 'rxjs';
+import { Router } from '@angular/router';
+import { SearchComponent } from '@getbeyond/ng-beyond-js';
+
 import { APP_PERMISSION_TODO_ADMIN_API_KEY, DEFAULT_INFO_TIMEOUT, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO } from '../../app.const';
-import { Component, ErrorHandler, OnInit } from '@angular/core';
 import { InitService } from '../../modules/core/providers/init/init.service';
-import { Observable } from 'rxjs';
-import { Router } from "@angular/router";
 import { TasksService } from '../../modules/core/providers/tasks/tasks.service';
 import { Task } from '../../modules/core/models/task/task.model';
-import * as _ from 'lodash';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/finally';
-import 'rxjs/add/operator/mergeMap';
 
 @Component({
   selector: 'app-todo-list',
@@ -17,17 +17,21 @@ import 'rxjs/add/operator/mergeMap';
 })
 export class TodoListComponent implements OnInit {
 
+  @ViewChild('search') search: SearchComponent;
+
+  blockers: {[k: string]: boolean|number};
+  info: {[k: string]: string};
+  permissions: {[k: string]: boolean} | {};
+  tasksEditingAllowed: boolean;
+  tasks: Array<Task>;
+  visibleTasks: Array<Task>;
+  userInfo: object;
+  percentComplete = 0;
+
   private errorHandler: ErrorHandler;
   private initService: InitService;
   private router: Router;
   private tasksService: TasksService;
-  
-  public blockers: {[k: string]: boolean};
-  public info: {[k: string]: string};
-  public permissions: {[k: string]: boolean} | {};
-  public tasksEditingAllowed: boolean;
-  public tasks: Array<Task>;
-  public userInfo: object;
 
   constructor(errorHandler: ErrorHandler, initService: InitService, router: Router, tasksService: TasksService) {
 
@@ -38,7 +42,8 @@ export class TodoListComponent implements OnInit {
 
     this.blockers = {
       api_processing: false,
-      initializing: true
+      initializing: true,
+      task: false
     };
     this.info = {
       message: null,
@@ -51,38 +56,44 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public ngOnInit(): void {
+  ngOnInit(): void {
 
-    Observable.forkJoin([
+    forkJoin([
       this.initService.getPermissions(),
       this.initService.getUserInfo()
     ])
-      .mergeMap((response) => {
+      .pipe(
+        mergeMap((response) => {
 
-        this.permissions = _.get(response, 0, {});
-        this.userInfo = _.get(response, 1, {});
-        this.tasksEditingAllowed = Boolean(this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY]);
-        
-        let filters: object = !this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY] ?
-          {assigned_user_id: _.get(this.userInfo, 'id', 0)} :
-          null;
+          this.permissions = _.get(response, 0, {});
+          this.userInfo = _.get(response, 1, {});
+          this.tasksEditingAllowed = Boolean(this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY]);
 
-        return this.tasksService.load(filters, {includes: 'users(id,first_name,last_name)'});
+          const filters: object = !this.tasksEditingAllowed ?
+            {assigned_user_id: _.get(this.userInfo, 'id', 0)} :
+            null;
 
-      })
-      .catch((error: any) => {
-        this.handleError(error);
-        return Observable.empty();
-      })
+          return this.tasksService.load(filters, {includes: 'users(id,first_name,last_name)'});
+
+        }),
+        catchError((error: any) => {
+          this.handleError(error);
+          return empty();
+        })
+      )
       .subscribe((tasks: Array<Task>) => {
         this.tasks = tasks;
+        this.updateVisibleTasks('');
+        this.updatePercentComplete();
         this.blockers.initializing = false;
         return;
-      })
+      });
+  
+    this.search.queryChange.pipe(debounceTime(500)).subscribe(t => this.updateVisibleTasks(t));
 
   }
 
-  public actionOpenTaskModal(taskId: string | number = 'new'): void {
+  actionOpenTaskModal(taskId: string | number = 'new'): void {
 
     if (this.tasksEditingAllowed) {
       this.router.navigate(['todo', taskId]);
@@ -90,27 +101,40 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public onTaskStatusChange(task: Task = null): void {
+  onTaskStatusChange(task: Task = null): void {
 
     if (
       !this.blockers.initializing &&
-      !this.blockers.api_processing
+      this.blockers.task !== task.id
     ) {
-    
+
       task.toggleStatus();
-      this.blockers.api_processing = true;
+      this.blockers.task = task.id;
 
       this.tasksService.save(task)
-        .catch((error) => {
-          this.handleError(error, true);
-          return Observable.empty();
-        })
-        .finally(()=> {
-          this.blockers.api_processing = false;
-        })
+        .pipe(
+          catchError((error) => {
+            this.handleError(error, true);
+            return empty();
+          }),
+          finalize(() => {
+            this.updatePercentComplete();
+            this.blockers.task = false;
+          })
+        )
         .subscribe();
 
     }
+
+  }
+
+  private getTasksCompleteCount(): number {
+
+    let completeCount = 0;
+
+    _.forEach(this.tasks, (t) => { if (t.isComplete) { completeCount++; } });
+
+    return completeCount;
 
   }
 
@@ -145,8 +169,28 @@ export class TodoListComponent implements OnInit {
   }
 
   private showInfo(info: {[k: string]: string} = {message: null, type: MESSAGE_TYPE_INFO}): void {
+
     this.info = info;
     return;
+
+  }
+
+  private updatePercentComplete(): void {
+
+    if (this.tasks.length) {
+      this.percentComplete = Math.round((this.getTasksCompleteCount() / this.tasks.length) * 100);
+    }
+
+  }
+
+  private updateVisibleTasks(query) {
+
+    if (query) {
+      this.visibleTasks = _.filter(this.tasks, t => t.description.indexOf(query) !== -1);
+    } else {
+      this.visibleTasks = this.tasks;
+    }
+
   }
 
 }

@@ -1,37 +1,31 @@
-<div
-  id="todo-list-page"
-  fxLayout="column"
-  fxLayoutAlign="start start"
-  fxLayoutGap="30px"
-  class="container">
+<beyond-page id="todo-list-page">
 
-    <div
-      fxLayout="row"
-      fxLayout.xs="column"
-      fxLayoutAlign="space-between center"
-      fxLayoutWrap
-      fxLayoutGap="15px">
-
-        <h3>TODO List</h3>
+    <beyond-page-header title="TODO List">
 
         <button
           *ngIf="!blockers.initializing && tasksEditingAllowed"
           (click)="actionOpenTaskModal()"
           mat-button
-          color="primary">
+          class="beyond-btn">
             Add Task
         </button>
 
-    </div>
+        <beyond-search #search></beyond-search>
 
-    <div
+    </beyond-page-header>
+
+    <beyond-progressbar [value]="percentComplete"></beyond-progressbar>
+
+    <beyond-message
       *ngIf="info.message"
-      [ngClass]="[info.type]" >
+      [type]="info.type">
         {{ info.message }}
-    </div>
+    </beyond-message>
 
-    <mat-card
+    <beyond-card
       *ngIf="tasks.length > 0"
+      title="Tasks"
+      fxFlexAlign="start"
       fxLayout="column"
       fxLayoutGap="20px">
 
@@ -40,11 +34,11 @@
           fxLayoutAlign="space-between center"
           fxLayoutGap="10px"
           fxLayoutFill
-          *ngFor="let task of tasks">
+          *ngFor="let task of visibleTasks">
 
             <mat-checkbox
               [checked]="task.isComplete"
-              [disabled]="blockers.api_processing"
+              [disabled]="blockers.task === task.id"
               (change)="onTaskStatusChange(task)"
               [disableRipple]="true"
               [aria-label]="task.description">
@@ -53,32 +47,34 @@
             <div
               fxLayout="column"
               fxLayoutAlign="start start"
-              fxLayoutGap="5px"
               fxFlex="auto"
               [ngClass]="{'line-through': task.isComplete}">
 
-                <div fxLayout="column">{{ task.description }}</div>
+                <div fxLayout="column">
+                    <b>{{ task.description }}</b>
+                </div>
+
                 <div fxLayout="row" fxLayout.xs="column" class="task-details">
-                    <span>Assigned to: {{ task.asignedUsername }}</span>&nbsp;
+                    <span>Assigned to: {{ task.assignedUsername }}</span>&nbsp;
                     <span *ngIf="task.dueDate; else noDueDate" class="due-date">Due date: {{ task.dueDate }}</span>
                     <ng-template #noDueDate>
                         <span>No due date set</span>
                     </ng-template>
                 </div>
-            </div>
 
+            </div>
 
             <button
               *ngIf="tasksEditingAllowed"
               (click)="actionOpenTaskModal(task.id)"
               mat-button
-              aria-label="Edit task"
-              color="primary">
+              class="beyond-btn text-btn"
+              aria-label="Edit task">
                 Edit
             </button>
 
         </div>
 
-    </mat-card>
+    </beyond-card>
 
-</div>
+</beyond-page>
