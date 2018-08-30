@@ -4,17 +4,17 @@ import { Injectable } from '@angular/core';
 import { mergeMap, shareReplay } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
 
-import { AccountPrefsService } from '../account-prefs/account-prefs.service';
 import {
   ACCT_PREF_KEY_FOR_OVERDUE_TASKS_TASK_SCHEDULE, APP_ID, APP_PERMISSIONS, OVERDUE_TASKS_TASK_ID,
   OVERDUE_TASKS_TASK_SCHEDULE 
-} from '../../../../app.const';
-import { TaskSchedulesService } from '../task-schedules/task-schedules.service';
+} from '../../../app.const';
+import { AccountPrefsService } from '../../../shared/services/account-prefs/account-prefs.service';
+import { TaskSchedulesService } from '../../../shared/services/task-schedules/task-schedules.service';
 
 @Injectable()
 export class InitService {
 
-  private accountPrefsService: AccountPrefsService;
+  private accountPrefsService: AccountPrefsService
   private beyondService: BeyondService;
   private taskSchedulesService: TaskSchedulesService;
 

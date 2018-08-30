@@ -3,9 +3,9 @@ import { CanActivate } from '@angular/router';
 import { catchError, mergeMap } from 'rxjs/operators'; 
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { InitService } from '../../services/init/init.service';
+import { APP_PERMISSION_TODO_ADMIN_API_KEY } from '../../../app.const';
 
-import { APP_PERMISSION_TODO_ADMIN_API_KEY } from '../../../../app.const';
-import { InitService } from '../init/init.service';
 
 @Injectable()
 export class AdminPermissionRouteGuardService implements CanActivate {

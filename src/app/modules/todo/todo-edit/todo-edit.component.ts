@@ -7,12 +7,12 @@ import { empty, of } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { DEFAULT_INFO_TIMEOUT, DEFAULT_LOCATION_ID, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO } from '../../app.const';
-import { InitService } from '../../modules/core/providers/init/init.service';
-import { TasksService } from '../../modules/core/providers/tasks/tasks.service';
-import { UsersService } from '../../modules/core/providers/users/users.service';
-import { Task } from '../../modules/core/models/task/task.model';
-import { User } from '../../modules/core/models/user/user.model';
+import { DEFAULT_INFO_TIMEOUT, DEFAULT_LOCATION_ID, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO } from '../../../app.const';
+import { User } from '../../../shared/models/user/user.model';
+import { Task } from '../../../shared/models/task/task.model';
+import { InitService } from '../../../core/services/init/init.service';
+import { TasksService } from '../../../shared/services/tasks/tasks.service';
+import { UsersService } from '../../../shared/services/users/users.service';
 
 @Component({
   selector: 'app-todo-edit',

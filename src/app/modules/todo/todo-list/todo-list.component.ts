@@ -5,10 +5,10 @@ import { empty, forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 import { SearchComponent } from '@getbeyond/ng-beyond-js';
 
-import { APP_PERMISSION_TODO_ADMIN_API_KEY, DEFAULT_INFO_TIMEOUT, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO } from '../../app.const';
-import { InitService } from '../../modules/core/providers/init/init.service';
-import { TasksService } from '../../modules/core/providers/tasks/tasks.service';
-import { Task } from '../../modules/core/models/task/task.model';
+import { APP_PERMISSION_TODO_ADMIN_API_KEY, DEFAULT_INFO_TIMEOUT, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO } from '../../../app.const';
+import { Task } from '../../../shared/models/task/task.model';
+import { InitService } from '../../../core/services/init/init.service';
+import { TasksService } from '../../../shared/services/tasks/tasks.service';
 
 @Component({
   selector: 'app-todo-list',
@@ -94,11 +94,9 @@ export class TodoListComponent implements OnInit {
   }
 
   actionOpenTaskModal(taskId: string | number = 'new'): void {
-
     if (this.tasksEditingAllowed) {
-      this.router.navigate(['todo', taskId]);
+      this.router.navigate(['todo/task', taskId]);
     }
-
   }
 
   onTaskStatusChange(task: Task = null): void {

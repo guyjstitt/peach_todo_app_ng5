@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { DB_FIELDS } from '../../../app.const';
+import { DB_FIELDS } from '../../app.const';
 
 export class BaseModel {
 

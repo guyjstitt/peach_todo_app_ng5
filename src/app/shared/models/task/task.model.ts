@@ -2,10 +2,10 @@ import * as _ from 'lodash';
 import * as moment from 'moment-timezone';
 
 import { BaseModel } from '../base.model';
-import { DB_DATE_FORMAT } from '../../../../app.const';
+import { DB_DATE_FORMAT } from '../../../app.const';
 import { User } from '../user/user.model';
 
-const API_KEY = 'tdd_task';
+const API_KEY = 'bynddev_tasks';
 const FIELDS = ['assigned_user_id', 'description', 'due_date', 'is_complete', 'location_id'];
 
 export class Task extends BaseModel {
